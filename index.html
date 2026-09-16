@@ -1,0 +1,1180 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>1000 Bot WhatsApp Channel Viewer</title>
+
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet">
+
+  <style>
+    body {
+      background:#0f172a;
+      color:#e2e8f0;
+    }
+
+    .card {
+      background:#111827;
+      border-color:#334155;
+    }
+
+    .form-control,
+    .form-select {
+      background:#0b1220;
+      color:#e2e8f0;
+      border-color:#475569;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+      background:#0b1220;
+      color:#e2e8f0;
+    }
+
+    .stat {
+      min-height:120px;
+    }
+
+    .bot-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fill,minmax(170px,1fr));
+      gap:10px;
+      max-height:500px;
+      overflow:auto;
+    }
+
+    .bot {
+      border:1px solid #334155;
+      border-radius:10px;
+      padding:10px;
+      background:#0b1220;
+    }
+
+    .dot {
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      display:inline-block;
+      background:#22c55e;
+      margin-right:6px;
+    }
+
+    .dot.wait {
+      background:#f59e0b;
+    }
+
+    .dot.off {
+      background:#64748b;
+    }
+
+    .preview-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:12px;
+    }
+
+    .preview-card {
+      border:1px solid #334155;
+      border-radius:10px;
+      padding:15px;
+      background:#0b1220;
+    }
+
+    .whatsapp-icon {
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      background:#25d366;
+      color:white;
+      font-size:24px;
+      font-weight:bold;
+      margin-bottom:12px;
+    }
+
+    .channel-url {
+      word-break:break-all;
+      font-size:.82rem;
+      color:#94a3b8;
+    }
+
+    .small-muted {
+      color:#94a3b8;
+      font-size:.85rem;
+    }
+
+    .cycle-badge {
+      font-size:.9rem;
+    }
+
+    .notice {
+      border:1px solid #334155;
+      border-radius:8px;
+      padding:12px;
+      background:#0b1220;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container-fluid py-4">
+
+  <!-- Header -->
+  <div class="d-flex flex-wrap justify-content-between
+              align-items-center mb-4 gap-3">
+
+    <div>
+      <h1 class="h3 mb-1">
+        1000 Bot WhatsApp Channel Viewer
+      </h1>
+
+      <div class="small-muted">
+        Virtual bot simulation + WhatsApp channel previews
+      </div>
+    </div>
+
+    <span class="badge text-bg-warning">
+      Use only on channels/URLs you own or are authorized to test
+    </span>
+
+  </div>
+
+
+  <!-- Controls -->
+  <div class="card p-3 mb-4">
+
+    <div class="row g-3 align-items-end">
+
+      <div class="col-lg-6">
+
+        <label class="form-label">
+          WhatsApp Channel URL
+        </label>
+
+        <input
+          id="url"
+          class="form-control"
+          type="url"
+          value="https://whatsapp.com/channel/0029Vb8wre3KbYMUWU4Efx1x"
+          placeholder="https://whatsapp.com/channel/...">
+
+      </div>
+
+
+      <div class="col-sm-4 col-lg-2">
+
+        <label class="form-label">
+          Virtual bots
+        </label>
+
+        <input
+          id="botCount"
+          class="form-control"
+          type="number"
+          min="1"
+          max="1000"
+          value="1000">
+
+      </div>
+
+
+      <div class="col-sm-4 col-lg-2">
+
+        <label class="form-label">
+          Channel previews
+        </label>
+
+        <select id="previewCount" class="form-select">
+          <option>4</option>
+          <option>8</option>
+          <option>12</option>
+          <option selected>20</option>
+        </select>
+
+      </div>
+
+
+      <div class="col-sm-4 col-lg-2 d-flex gap-2">
+
+        <button
+          id="start"
+          class="btn btn-success flex-fill">
+          Start
+        </button>
+
+        <button
+          id="stop"
+          class="btn btn-danger flex-fill"
+          disabled>
+          Stop
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- Auto restart -->
+    <div class="d-flex flex-wrap align-items-center gap-3 mt-3">
+
+      <div class="form-check form-switch">
+
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="autoRestart"
+          checked>
+
+        <label
+          class="form-check-label"
+          for="autoRestart">
+
+          Auto Restart
+
+        </label>
+
+      </div>
+
+
+      <span
+        id="cycleStatus"
+        class="badge text-bg-secondary cycle-badge">
+
+        Cycle 0
+
+      </span>
+
+
+      <span
+        id="runStatus"
+        class="badge text-bg-secondary">
+
+        Stopped
+
+      </span>
+
+    </div>
+
+
+    <div class="small-muted mt-2">
+
+      Virtual bots only simulate UI activity.
+      They do not generate 1,000 WhatsApp requests or
+      artificially increase channel traffic.
+
+    </div>
+
+  </div>
+
+
+  <!-- Stats -->
+  <div class="row g-3 mb-4">
+
+    <div class="col-md-3">
+
+      <div class="card stat p-3">
+
+        <div class="small-muted">
+          Bots
+        </div>
+
+        <div
+          id="botsStat"
+          class="display-6">
+
+          0
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-md-3">
+
+      <div class="card stat p-3">
+
+        <div class="small-muted">
+          Active
+        </div>
+
+        <div
+          id="activeStat"
+          class="display-6">
+
+          0
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-md-3">
+
+      <div class="card stat p-3">
+
+        <div class="small-muted">
+          Completed
+        </div>
+
+        <div
+          id="doneStat"
+          class="display-6">
+
+          0
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="col-md-3">
+
+      <div class="card stat p-3">
+
+        <div class="small-muted">
+          Errors
+        </div>
+
+        <div
+          id="errorStat"
+          class="display-6">
+
+          0
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- Progress -->
+  <div class="card p-3 mb-4">
+
+    <div class="d-flex justify-content-between mb-2">
+
+      <strong>
+        Simulation progress
+      </strong>
+
+      <span id="progressText">
+        0%
+      </span>
+
+    </div>
+
+
+    <div class="progress">
+
+      <div
+        id="progress"
+        class="progress-bar"
+        style="width:0%">
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <!-- WhatsApp previews -->
+  <div class="card p-3 mb-4">
+
+    <div class="d-flex justify-content-between
+                align-items-center mb-3">
+
+      <div>
+
+        <h2 class="h5 mb-0">
+          WhatsApp Channel Previews
+        </h2>
+
+        <div class="small-muted">
+          Click a preview to open the channel in WhatsApp
+        </div>
+
+      </div>
+
+
+      <button
+        id="clear"
+        class="btn btn-sm btn-outline-light">
+
+        Clear
+
+      </button>
+
+    </div>
+
+
+    <div class="notice mb-3">
+
+      <strong>Note:</strong>
+
+      WhatsApp channel pages normally cannot be displayed
+      inside iframes. These preview cards therefore open
+      the supplied channel URL directly instead.
+
+    </div>
+
+
+    <div
+      id="previews"
+      class="preview-grid">
+
+    </div>
+
+  </div>
+
+
+  <!-- Bot activity -->
+  <div class="card p-3">
+
+    <h2 class="h5">
+      Bot activity
+    </h2>
+
+    <div
+      id="bots"
+      class="bot-grid">
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+const $ = id => document.getElementById(id);
+
+let simulationTimer = null;
+let restartTimer = null;
+
+let state = {
+  total: 0,
+  active: 0,
+  done: 0,
+  errors: 0,
+  cycle: 0,
+  running: false
+};
+
+
+/*
+==========================================================
+WHATSAPP URL VALIDATION
+==========================================================
+*/
+
+function isWhatsAppChannelUrl(value) {
+
+  try {
+
+    const url = new URL(value);
+
+    const host = url.hostname
+      .toLowerCase()
+      .replace(/^www\./, "");
+
+    return (
+      (host === "whatsapp.com" ||
+       host === "wa.me") &&
+      (
+        url.pathname.startsWith("/channel/") ||
+        host === "wa.me"
+      )
+    );
+
+  } catch {
+
+    return false;
+
+  }
+
+}
+
+
+/*
+==========================================================
+UPDATE STATISTICS
+==========================================================
+*/
+
+function renderStats() {
+
+  $("botsStat").textContent = state.total;
+  $("activeStat").textContent = state.active;
+  $("doneStat").textContent = state.done;
+  $("errorStat").textContent = state.errors;
+
+  const finished =
+    state.done + state.errors;
+
+  const pct = state.total
+    ? Math.min(
+        100,
+        Math.round(
+          finished / state.total * 100
+        )
+      )
+    : 0;
+
+  $("progress").style.width =
+    pct + "%";
+
+  $("progressText").textContent =
+    pct + "%";
+
+}
+
+
+/*
+==========================================================
+CREATE SIMULATED BOTS
+==========================================================
+*/
+
+function makeBots(n) {
+
+  const frag =
+    document.createDocumentFragment();
+
+  for (let i = 1; i <= n; i++) {
+
+    const el =
+      document.createElement("div");
+
+    el.className = "bot";
+
+    el.id = "bot-" + i;
+
+    el.innerHTML = `
+      <div>
+        <span class="dot off"></span>
+        <strong>Bot ${i}</strong>
+      </div>
+
+      <div class="small-muted status">
+        Waiting
+      </div>
+    `;
+
+    frag.appendChild(el);
+
+  }
+
+  $("bots").replaceChildren(frag);
+
+}
+
+
+/*
+==========================================================
+UPDATE INDIVIDUAL BOT
+==========================================================
+*/
+
+function setBot(i, cls, text) {
+
+  const el =
+    $("bot-" + i);
+
+  if (!el) return;
+
+  const dot =
+    el.querySelector(".dot");
+
+  dot.className = "dot";
+
+  if (cls) {
+    dot.classList.add(cls);
+  }
+
+  el.querySelector(
+    ".status"
+  ).textContent = text;
+
+}
+
+
+/*
+==========================================================
+CREATE WHATSAPP PREVIEWS
+==========================================================
+*/
+
+function addPreviews(url, count) {
+
+  const wrap =
+    $("previews");
+
+  wrap.replaceChildren();
+
+
+  for (let i = 1; i <= count; i++) {
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "preview-card";
+
+
+    card.innerHTML = `
+
+      <div class="whatsapp-icon">
+        WA
+      </div>
+
+      <h3 class="h6">
+        WhatsApp Channel ${i}
+      </h3>
+
+      <div class="small-muted mb-2">
+        Channel preview
+      </div>
+
+      <div class="channel-url mb-3">
+        ${escapeHtml(url)}
+      </div>
+
+      <a
+        href="${escapeAttribute(url)}"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-success btn-sm">
+
+        Open WhatsApp Channel
+
+      </a>
+
+    `;
+
+    wrap.appendChild(card);
+
+  }
+
+}
+
+
+/*
+==========================================================
+HTML ESCAPING
+==========================================================
+*/
+
+function escapeHtml(value) {
+
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+function escapeAttribute(value) {
+
+  return escapeHtml(value);
+
+}
+
+
+/*
+==========================================================
+RUNNING STATUS
+==========================================================
+*/
+
+function setRunning(running) {
+
+  state.running =
+    running;
+
+  $("start").disabled =
+    running;
+
+  $("stop").disabled =
+    !running;
+
+
+  if (running) {
+
+    $("runStatus").textContent =
+      "Running";
+
+    $("runStatus").className =
+      "badge text-bg-success";
+
+  } else {
+
+    $("runStatus").textContent =
+      "Stopped";
+
+    $("runStatus").className =
+      "badge text-bg-secondary";
+
+  }
+
+}
+
+
+/*
+==========================================================
+STOP EVERYTHING
+==========================================================
+*/
+
+function stopSimulation() {
+
+  clearInterval(
+    simulationTimer
+  );
+
+  clearTimeout(
+    restartTimer
+  );
+
+  simulationTimer = null;
+  restartTimer = null;
+
+  setRunning(false);
+
+}
+
+
+/*
+==========================================================
+RUN ONE CYCLE
+==========================================================
+*/
+
+function runCycle() {
+
+  const url =
+    $("url").value.trim();
+
+
+  /*
+   * Validate WhatsApp channel URL.
+   */
+
+  if (!isWhatsAppChannelUrl(url)) {
+
+    alert(
+      "Enter a valid WhatsApp Channel URL, " +
+      "for example: https://whatsapp.com/channel/..."
+    );
+
+    return;
+
+  }
+
+
+  const n =
+    Math.min(
+      1000,
+      Math.max(
+        1,
+        Number(
+          $("botCount").value
+        ) || 1000
+      )
+    );
+
+
+  const previews =
+    Math.min(
+      20,
+      Math.max(
+        1,
+        Number(
+          $("previewCount").value
+        ) || 20
+      )
+    );
+
+
+  /*
+   * Cancel previous timers.
+   */
+
+  clearInterval(
+    simulationTimer
+  );
+
+  clearTimeout(
+    restartTimer
+  );
+
+
+  /*
+   * Start new cycle.
+   */
+
+  state.total =
+    n;
+
+  state.active =
+    0;
+
+  state.done =
+    0;
+
+  state.errors =
+    0;
+
+  state.cycle++;
+
+
+  $("cycleStatus").textContent =
+    "Cycle " + state.cycle;
+
+
+  /*
+   * Create virtual bots.
+   */
+
+  makeBots(n);
+
+
+  /*
+   * Create WhatsApp channel cards.
+   */
+
+  addPreviews(
+    url,
+    previews
+  );
+
+
+  renderStats();
+
+  setRunning(true);
+
+
+  let next = 1;
+
+
+  /*
+   * Process virtual bots in batches.
+   *
+   * No network requests are generated.
+   */
+
+  simulationTimer =
+    setInterval(() => {
+
+      if (!state.running) {
+
+        clearInterval(
+          simulationTimer
+        );
+
+        return;
+
+      }
+
+
+      const batch =
+        Math.min(
+          25,
+          n - next + 1
+        );
+
+
+      /*
+       * No bots left to start.
+       */
+
+      if (batch <= 0) {
+
+        clearInterval(
+          simulationTimer
+        );
+
+        simulationTimer = null;
+
+        checkCycleComplete();
+
+        return;
+
+      }
+
+
+      /*
+       * Start next batch.
+       */
+
+      for (
+        let j = 0;
+        j < batch;
+        j++
+      ) {
+
+        const i =
+          next++;
+
+        state.active++;
+
+
+        setBot(
+          i,
+          "wait",
+          "Viewing channel..."
+        );
+
+
+        /*
+         * Simulate completion.
+         */
+
+        setTimeout(() => {
+
+          if (!state.running) {
+            return;
+          }
+
+
+          state.active--;
+
+
+          /*
+           * Simulated error rate.
+           */
+
+          if (
+            Math.random() < 0.03
+          ) {
+
+            state.errors++;
+
+            setBot(
+              i,
+              "off",
+              "Simulated error"
+            );
+
+          } else {
+
+            state.done++;
+
+            setBot(
+              i,
+              "",
+              "Completed"
+            );
+
+          }
+
+
+          renderStats();
+
+          checkCycleComplete();
+
+        }, 700 + Math.random() * 2500);
+
+      }
+
+
+      renderStats();
+
+    }, 180);
+
+}
+
+
+/*
+==========================================================
+CHECK CYCLE COMPLETION
+==========================================================
+*/
+
+function checkCycleComplete() {
+
+  if (!state.running) {
+    return;
+  }
+
+
+  const finished =
+    state.done +
+    state.errors;
+
+
+  if (
+    finished < state.total ||
+    state.active > 0
+  ) {
+
+    return;
+
+  }
+
+
+  clearInterval(
+    simulationTimer
+  );
+
+  simulationTimer = null;
+
+
+  /*
+   * Automatic restart.
+   */
+
+  if (
+    $("autoRestart").checked
+  ) {
+
+    $("runStatus").textContent =
+      "Restarting...";
+
+    $("runStatus").className =
+      "badge text-bg-warning";
+
+
+    restartTimer =
+      setTimeout(() => {
+
+        if (
+          $("autoRestart").checked &&
+          state.running
+        ) {
+
+          runCycle();
+
+        }
+
+      }, 2000);
+
+  } else {
+
+    setRunning(false);
+
+  }
+
+}
+
+
+/*
+==========================================================
+START
+==========================================================
+*/
+
+$("start").onclick = () => {
+
+  stopSimulation();
+
+  state.cycle = 0;
+
+  runCycle();
+
+};
+
+
+/*
+==========================================================
+STOP
+==========================================================
+*/
+
+$("stop").onclick = () => {
+
+  stopSimulation();
+
+};
+
+
+/*
+==========================================================
+CLEAR
+==========================================================
+*/
+
+$("clear").onclick = () => {
+
+  stopSimulation();
+
+  $("previews").replaceChildren();
+
+  $("bots").replaceChildren();
+
+
+  state = {
+    total: 0,
+    active: 0,
+    done: 0,
+    errors: 0,
+    cycle: 0,
+    running: false
+  };
+
+
+  $("cycleStatus").textContent =
+    "Cycle 0";
+
+
+  renderStats();
+
+};
+
+
+/*
+==========================================================
+AUTO RESTART
+==========================================================
+*/
+
+$("autoRestart").addEventListener(
+  "change",
+  () => {
+
+    if (
+      !$("autoRestart").checked
+    ) {
+
+      clearTimeout(
+        restartTimer
+      );
+
+      restartTimer = null;
+
+    }
+
+  }
+);
+
+
+/*
+==========================================================
+INITIAL UI
+==========================================================
+*/
+
+renderStats();
+
+</script>
+
+</body>
+</html>
